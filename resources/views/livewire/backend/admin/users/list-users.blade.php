@@ -339,7 +339,7 @@
                             @endif
                             <div class="mb-3 custom-file">
                                 <div x-data="{ isUploading: false, progress: 5 }" x-on:livewire-upload-start="isUploading = true" x-on:livewire-upload-finish="isUploading = false; progress = 5" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
-                                    <input tabindex="8" wire:model="photo" type="file" class="custom-file-input @error('photo') is-invalid @enderror" id="validatedCustomFile">
+                                    <input tabindex="10" wire:model="photo" type="file" class="custom-file-input @error('photo') is-invalid @enderror" id="validatedCustomFile">
                                     {{-- progres bar --}}
                                     <div x-show.transition="isUploading" class="mt-2 rounded progress progress-sm">
                                         <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" x-bind:style="`width: ${progress}%`">
@@ -358,21 +358,23 @@
                             </div>
                         </div>
 
+                        <!-- Modal User Status -->
+
+                        <div class="form-group d-flex">
+                            <label for="statusRadio">Status :</label>
+                            <div class="ml-2 mr-2 form-check">
+                                <input class="form-check-input" wire:model="data.status" value="1" type="radio">
+                                 <label class="form-check-label">Active</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" wire:model="data.status" value="0" type="radio">
+                                <label class="form-check-label">InActive</label>
+                            </div>
+                        </div>
+
                         <!-- Modal User Permissions -->
-
-                        {{-- @if ($showPermissions) --}}
                             <div id="permissions" class="form-group">
-                                {{--<label class="text-center text-white bg-secondary form-control" for="permissions">Permissions</label>
-                                @php
-                                    $PermissionName = array_keys(config('laratrust_seeder.roles_structure.superadmin'));
-                                @endphp --}}
-
-                                {{-- @foreach ( $permissions->chunk(4) as $index => $chunk ) --}}
-                                    {{-- @dump($permissions->chunk(4)) --}}
                                 <div class="mb-2 card d-flex justify-content-center">
-                                    {{-- <div class="card-header">
-                                        {{ ucfirst($PermissionName[$index] . ' Permissions') }}
-                                    </div> --}}
                                     <div class="card-header bg-light">
                                         <h4 class="text-center">Permissions</h4>
                                     </div>

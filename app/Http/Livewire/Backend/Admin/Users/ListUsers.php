@@ -106,15 +106,16 @@ class ListUsers extends Component
     public function createUser()
     {
         $validatedData = Validator::make($this->data, [
-			'name' => 'required',
-			'username' => 'required|unique:users',
-			'email' => 'required|email|unique:users',
-			'phone' => 'required|numeric',
-			'description' => ['string', 'max:255'],
-			'address' => ['string', 'max:255'],
-            'photo'    => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-			'password' => 'required|confirmed',
-            'role_id'   => 'required',
+			'name'          => 'required',
+			'username'      => 'required|unique:users',
+			'email'         => 'required|email|unique:users',
+			'phone'         => 'required|numeric',
+			'description'   => ['string', 'max:255'],
+			'address'       => ['string', 'max:255'],
+            'photo'         => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+			'password'      => 'required|confirmed',
+            'status'        => 'required',
+            'role_id'       => 'required',
 		])->validate();
 
 		$validatedData['password'] = bcrypt($validatedData['password']);
@@ -176,9 +177,10 @@ class ListUsers extends Component
                 'username'              => 'required|unique:users,username,'.$this->user->id,
                 'email'                 => 'required|email|unique:users,email,'.$this->user->id,
                 'phone'                 => 'required|numeric',
-                'description'           => ['string', 'max:255'],
-                'address'               => ['string', 'max:255'],
+                'description'           => 'max:255',
+                'address'               => 'max:255',
                 'photo'                 => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'status'                => 'required',
                 'role_id'               => 'required',
                 'password'              => 'sometimes|confirmed',
             ])->validate();
