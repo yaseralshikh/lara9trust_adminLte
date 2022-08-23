@@ -235,7 +235,7 @@ class ListUsers extends Component
     public function show(User $user)
     {
         $this->reset();
-
+        
 		$this->user = $user;
 
 		$this->data = $user->toArray();

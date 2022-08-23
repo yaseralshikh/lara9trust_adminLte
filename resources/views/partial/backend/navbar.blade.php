@@ -149,8 +149,8 @@
                 <li class="user-header bg-secondary ">
                     <img src="{{ asset('backend/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
                     <p>
-                        {{  Str::title(Auth::user()->name) }} - Web Developer
-                        <small>Member since Nov. 2012</small>
+                        {{  Str::title(Auth::user()->name) }} - {{  Str::title(Auth::user()->description) }}
+                        <small>Member since : {{ date('d-m-Y', strtotime(Auth::user()->create_at)) }}</small>
                     </p>
                 </li>
                 <!-- Menu Body -->
@@ -162,16 +162,15 @@
                             <p class="text-sm text-muted"><i class="mr-1 fas fa-phone"></i> Phone:</p>
                         </div>
                         <div class="col-8">
-                            <p class="mb-2 text-sm text-muted">Web Designer</p>
-                            <p class="mb-2 text-sm text-muted">Street 123, Demo City</p>
-                            <p class="text-sm text-muted">+ 800 - 12 12 23 52</p>
+                            <p class="mb-2 text-sm text-muted">{{  Str::title(Auth::user()->description) }}</p>
+                            <p class="mb-2 text-sm text-muted">{{ Auth::user()->address }}</p>
+                            <p class="text-sm text-muted">{{ Auth::user()->phone }}</p>
                         </div>
                     </div>
                 </li>
                 <!-- Menu Footer-->
                 <li class="flex-wrap mt-2 d-flex">
-                    <button type="button" class="m-2 btn btn-block btn-secondary btn-sm"><i class="mr-2 fa fa-user" aria-hidden="true"></i>Profile</button>
-
+                    {{-- <button type="button" class="m-2 btn btn-block btn-secondary btn-sm"><i class="mr-2 fa fa-user" aria-hidden="true"></i>Profile</button> --}}
                     <a class="m-2 btn btn-block btn-secondary btn-sm" href="#" data-toggle="modal" data-target="#logoutModal">
                         <i class="mr-2 fas fa-sign-out-alt"></i>
                         Logout

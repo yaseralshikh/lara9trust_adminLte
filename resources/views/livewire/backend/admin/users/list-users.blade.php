@@ -62,32 +62,28 @@
                     </div>
                 </div>
                 <div class="card-body">
-
-                    <div class="flex-wrap form-group d-flex justify-content-between">
-                        {{-- search --}}
-                        <div class="mb-1 input-group" style="width: 250px;">
-                            <input type="search" wire:model="searchTerm" class="form-control" placeholder="Search for..." value="Lorem ipsum">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fa fa-search"></i>
-                                </button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-group ">
+                            {{-- search --}}
+                            <div class="input-group" style="width: 200px;">
+                                <input type="search" wire:model="searchTerm" class="form-control" placeholder="Search for..." value="Lorem ipsum">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         {{-- Roles filter --}}
-                        <div class="flex-wrap">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-secondary">Roles filter &nbsp &nbsp<span class="mr-2 badge badge-light button-badge">Total : {{ $users->total() }}</span></button>
-                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div class="dropdown-menu" role="menu">
-                                    <a class="dropdown-item" wire:click="filterUsersByRoles" href="#">All</a>
-                                    @foreach ($roles as $role)
-                                        <a class="dropdown-item" wire:click="filterUsersByRoles('{{ $role->name }}')" href="#">{{ $role->name }}</a>
-                                    @endforeach
-                                </div>
-                            </div>
+                        <div class="form-group d-flex align-items-center">
+                            <label class="flex-wrap">Roles filter &nbsp &nbsp<span class="bg-secondary badge badge-light button-badge">Total : {{ $users->total() }}</span></label>
+                            <select class="form-control bg-secondary flex-wrap" wire:change='filterUsersByRoles($event.target.value)'>
+                                <option value="">All</option>
+                                @foreach ($roles as $role)
+                                    <option  value="{{ $role->name }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
