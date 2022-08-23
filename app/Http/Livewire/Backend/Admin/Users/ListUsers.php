@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class ListUsers extends Component
 {
@@ -42,6 +46,9 @@ class ListUsers extends Component
     public $selectedRows = [];
 	public $selectPageRows = false;
     protected $listeners = ['deleteConfirmed' => 'deleteUsers'];
+
+    public $excelFile = Null;
+    public $importTypevalue = 'addNew';
 
     // Updated Select Page Rows
 
@@ -391,6 +398,112 @@ class ListUsers extends Component
             ]);
             return $message;
         }
+    }
+
+    // Export Excel File
+
+    public function exportExcel()
+    {
+        return Excel::download(new UsersExport($this->searchTerm,$this->selectedRows), 'users.xlsx');
+    }
+
+    // Show Import Excel Form
+
+    public function importExcelForm()
+    {
+        $this->reset();
+		$this->dispatchBrowserEvent('show-import-excel-modal');
+    }
+
+    public function importType($value)
+    {
+        $this->importTypevalue = $value;
+    }
+
+    public function importExcel()
+    {
+        try {
+
+            $this->validate([
+                'excelFile' => 'required|mimes:xls,xlsx'
+            ]);
+
+            if ($this->importTypevalue == 'addNew') {
+                // for add new data
+                Excel::import(new UsersImport, $this->excelFile);
+            } else {
+                // for update data
+                //$this->importTypevalue = 'Update';
+                $usersData = Excel::toCollection(new UsersImport(), $this->excelFile);
+                foreach ($usersData[0] as $user) {
+                    User::where('id', $user['id'])->update([
+                        'name' => $user['name'],
+                        'username' => $user['username'],
+                        'phone' => $user['phone'],
+                        'email' => $user['email'],
+                        'description' => $user['description'],
+                        'address' => $user['address'],
+                        //'password' => bcrypt($user['password']),
+                    ]);
+                }
+            }
+
+            // method for add Roles to nwe users added
+
+            $usersDoesntHaveRole = User::whereDoesntHave('roles')->get();
+
+            foreach ($usersDoesntHaveRole as $user) {
+                DB::table('role_user')->insert([
+                    'role_id' => 3,
+                    'user_id' => $user->id,
+                    'user_type' => 'App\Models\User'
+                ]);
+            }
+
+            // end method
+
+            $this->alert('success', 'Users Added Successfully.', [
+                'position'  =>  'top-end',
+                'timer'  =>  3000,
+                'toast'  =>  true,
+                'text'  =>  null,
+                'showCancelButton'  =>  false,
+                'showConfirmButton'  =>  false
+            ]);
+
+            $this->dispatchBrowserEvent('hide-import-excel-modal');
+
+
+        } catch (\Throwable $th) {
+            $message = $this->alert('error', $th->getMessage(), [
+                'position'  =>  'top-end',
+                'timer'  =>  3000,
+                'toast'  =>  true,
+                'text'  =>  null,
+                'showCancelButton'  =>  false,
+                'showConfirmButton'  =>  false
+            ]);
+            return $message;
+
+            $this->reset();
+            $this->dispatchBrowserEvent('hide-import-excel-modal');
+        }
+    }
+
+    public function exportPDF()
+    {
+        return response()->streamDownload(function(){
+            if ($this->selectedRows) {
+                $users = User::whereIn('id', $this->selectedRows)->orderBy('name', 'asc')->get();
+            } else {
+                //$users = $this->users;
+                $users = User::orderBy('name', 'asc')->get();
+            }
+
+            $pdf = PDF::loadView('livewire.backend.admin.users.users_pdf',['users' => $users]);
+            return $pdf->stream('users');
+
+        },'users.pdf');
     }
 
     public function render()

@@ -1,7 +1,12 @@
 <div>
     @section('style')
         <style>
-
+            .disabled-link{
+                cursor: default;
+                pointer-events: none;
+                text-decoration: none;
+                color: rgb(174, 172, 172);
+            }
         </style>
     @endsection
 
@@ -37,20 +42,24 @@
                             </i>
                         </button>
 
-                        @if ($selectedRows)
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary btn-sm">Action</button>
-                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div class="dropdown-menu" role="menu" style="">
-                                    <a class="dropdown-item" wire:click.prevent="setAllAsActive" href="#">Set as Acive</a>
-                                    <a class="dropdown-item" wire:click.prevent="setAllAsInActive" href="#">Set as InActive</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item text-danger delete-confirm" wire:click.prevent="deleteSelectedRows" href="#">Delete Selected</a>
-                                </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary btn-sm">Action</button>
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu" role="menu" style="">
+                                <a class="dropdown-item" wire:click.prevent="exportExcel" href="#" aria-disabled="true">Export to Excel</a>
+                                <a class="dropdown-item" wire:click.prevent="importExcelForm" href="#">Import from Excel</a>
+                                <a class="dropdown-item" wire:click.prevent="exportPDF" href="#">Export to PDF</a>
+                                <div class="dropdown-divider"></div>
+                                {{-- @if ($selectedRows) --}}
+                                <a class="dropdown-item {{ $selectedRows ? '' : 'disabled-link' }}" wire:click.prevent="setAllAsActive" href="#">Set as Acive</a>
+                                <a class="dropdown-item {{ $selectedRows ? '' : 'disabled-link' }}" wire:click.prevent="setAllAsInActive" href="#">Set as InActive</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item {{ $selectedRows ? 'text-danger' : 'disabled-link' }}  delete-confirm" wire:click.prevent="deleteSelectedRows" href="#">Delete Selected</a>
+                                {{-- @endif --}}
                             </div>
-                        @endif
+                        </div>
                     </h3>
 
                     <div class="card-tools">
@@ -492,6 +501,67 @@
         </div>
     </div>
 
+    <!-- Modal Import Excel File -->
+    <div class="modal fade" id="importExcelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog" role="document">
+            <form autocomplete="off" wire:submit.prevent="importExcel">
+                <div class="modal-content">
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            Import Excel File
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Modal Excel File -->
+
+                        <div class="form-group">
+                            <label for="custom-file">Choose Excel File</label>
+                            <div class="mb-3 custom-file">
+                                <div x-data="{ isUploading: false, progress: 5 }" x-on:livewire-upload-start="isUploading = true" x-on:livewire-upload-finish="isUploading = false; progress = 5" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
+                                    <input wire:model.defer="excelFile" type="file" class="custom-file-input @error('excelFile') is-invalid @enderror" id="validatedCustomFile" required>
+                                    {{-- progres bar --}}
+                                    <div x-show.transition="isUploading" class="mt-2 rounded progress progress-sm">
+                                        <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" x-bind:style="`width: ${progress}%`"></div>
+                                    </div>
+                                </div>
+                                @error('excelFile')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                <label class="custom-file-label" for="customFile">
+                                    @if ($excelFile)
+                                        {{ $excelFile->getClientOriginalName() }}
+                                    @else
+                                        Choose Excel file
+                                    @endif
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-0 form-group">
+                            <label>Import As :</label>
+                            <label class="ml-3 radio-inline">
+                                <input type="radio" wire:click="importType('addNew')" name="optionsRadiosInline" id="optionsRadiosInline1" value="addNew" checked="checked">Add New
+                            </label>
+                            <label class="ml-3 radio-inline">
+                                <input type="radio" wire:click="importType('Update')" name="optionsRadiosInline" id="optionsRadiosInline2" value="Update">Update
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="mr-1 fa fa-times"></i> Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="mr-1 fa fa-open"></i> Open</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @section('script')
 
         <script>
@@ -528,11 +598,6 @@
                 window.addEventListener('hide-import-excel-modal', function (event) {
                     $('#importExcelModal').modal('hide');
                 });
-
-                window.addEventListener('swal', function (event) {
-                    $('#importExcelModal').modal('hide');
-                });
-
             });
         </script>
 

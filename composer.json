@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "carlos-meneses/laravel-mpdf": "^2.1",
         "fruitcake/laravel-cors": "^2.0.5",
         "guzzlehttp/guzzle": "^7.2",
         "jantinnerezo/livewire-alert": "^2.2",
@@ -14,6 +15,9 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
         "livewire/livewire": "^2.10",
+        "maatwebsite/excel": "^3.1",
+        "mpdf/mpdf": "^8.1",
+        "psr/simple-cache": "2.0",
         "santigarcor/laratrust": "^7.1"
     },
     "require-dev": {
