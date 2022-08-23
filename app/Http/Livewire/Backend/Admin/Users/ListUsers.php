@@ -8,6 +8,7 @@ use Livewire\Component;
 use App\Models\Permission;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -37,6 +38,98 @@ class ListUsers extends Component
     public $showEditModal = false;
 
     public $userIdBeingRemoved = null;
+
+    public $selectedRows = [];
+	public $selectPageRows = false;
+    protected $listeners = ['deleteConfirmed' => 'deleteUsers'];
+
+    // Updated Select Page Rows
+
+    public function updatedSelectPageRows($value)
+    {
+        if ($value) {
+            $this->selectedRows = $this->users->pluck('id')->map(function ($id) {
+                return (string) $id;
+            });
+        } else {
+            $this->reset(['selectedRows', 'selectPageRows']);
+        }
+    }
+
+    // show Sweetalert Confirmation for Delete
+
+    public function deleteSelectedRows()
+    {
+        $this->dispatchBrowserEvent('show-delete-alert-confirmation');
+    }
+
+    // set All selected User As Active
+
+    public function setAllAsActive()
+	{
+		User::whereIn('id', $this->selectedRows)->update(['status' => 1]);
+
+        $this->alert('success', 'Users set As Active successfully.', [
+            'position'  =>  'top-end',
+            'timer'  =>  3000,
+            'toast'  =>  true,
+            'text'  =>  null,
+            'showCancelButton'  =>  false,
+            'showConfirmButton'  =>  false
+        ]);
+
+		$this->reset(['selectPageRows', 'selectedRows']);
+	}
+
+    // set All selected User As InActive
+
+	public function setAllAsInActive()
+	{
+		User::whereIn('id', $this->selectedRows)->update(['status' => 0]);
+
+        $this->alert('success', 'Users set As Inactive successfully.', [
+            'position'  =>  'top-end',
+            'timer'  =>  3000,
+            'toast'  =>  true,
+            'text'  =>  null,
+            'showCancelButton'  =>  false,
+            'showConfirmButton'  =>  false
+        ]);
+
+		$this->reset(['selectPageRows', 'selectedRows']);
+	}
+
+    // Delete Selected User with relationship roles And permission
+
+    public function deleteUsers()
+    {
+        // delete images for users if exists from Storage folder
+        $profileImages =User::whereIn('id', $this->selectedRows)->get(['profile_photo']);
+        foreach($profileImages as $profileImage){
+            $imageFileName = $profileImage->profile_photo;
+            if($imageFileName){
+                Storage::disk('profile_photos')->delete($imageFileName);
+            }
+        }
+
+        // delete roles and permissions for selected users from database
+        DB::table('role_user')->whereIn('user_id', $this->selectedRows)->delete();
+        DB::table('permission_user')->whereIn('user_id', $this->selectedRows)->delete();
+
+        // delete selected users from database
+		User::whereIn('id', $this->selectedRows)->delete();
+
+        $this->alert('success', 'All selected users got deleted.', [
+            'position'  =>  'top-end',
+            'timer'  =>  3000,
+            'toast'  =>  true,
+            'text'  =>  null,
+            'showCancelButton'  =>  false,
+            'showConfirmButton'  =>  false
+        ]);
+
+		$this->reset();
+    }
 
     // Sort By Column Name
 
@@ -235,7 +328,7 @@ class ListUsers extends Component
     public function show(User $user)
     {
         $this->reset();
-        
+
 		$this->user = $user;
 
 		$this->data = $user->toArray();
@@ -270,6 +363,10 @@ class ListUsers extends Component
             if($imageFileName){
                 Storage::disk('profile_photos')->delete($imageFileName);
             }
+
+            // delete roles and permissions for selected users from database
+            DB::table('role_user')->where('user_id', $this->userIdBeingRemoved)->delete();
+            DB::table('permission_user')->where('user_id', $this->userIdBeingRemoved)->delete();
 
             $user->delete();
 

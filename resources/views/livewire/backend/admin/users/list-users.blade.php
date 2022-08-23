@@ -37,19 +37,20 @@
                             </i>
                         </button>
 
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary btn-sm">Action</button>
-                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <div class="dropdown-menu" role="menu" style="">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Separated link</a>
+                        @if ($selectedRows)
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm">Action</button>
+                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div class="dropdown-menu" role="menu" style="">
+                                    <a class="dropdown-item" wire:click.prevent="setAllAsActive" href="#">Set as Acive</a>
+                                    <a class="dropdown-item" wire:click.prevent="setAllAsInActive" href="#">Set as InActive</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger delete-confirm" wire:click.prevent="deleteSelectedRows" href="#">Delete Selected</a>
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     </h3>
 
                     <div class="card-tools">
@@ -87,10 +88,24 @@
                         </div>
                     </div>
 
+                    @if ($selectedRows)
+                        <span class="mb-2 text-success">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            selected
+                            <span class="text-dark font-weight-bold">{{ count($selectedRows) }}</span> {{ Str::plural('user', count($selectedRows)) }}
+                        </span>
+                    @endif
+
                     <div class="table-responsive">
                         <table id="example2"  class="table text-center table-bordered table-hover dataTable dtr-inline" aria-describedby="example2_info">
                             <thead class="bg-light">
                                 <tr>
+                                    <th scope="col">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" wire:model="selectPageRows" value="" class="custom-control-input" id="customCheck">
+                                            <label class="custom-control-label" for="customCheck"></label>
+                                        </div>
+                                    </th>
                                     <th>#</th>
                                     <th>
                                         Name
@@ -99,21 +114,7 @@
                                             <i class="fa fa-arrow-down" style="color : {{ $sortColumnName === 'name' && $sortDirection === 'desc' ? '#90EE90' : '' }}"></i>
                                         </span>
                                     </th>
-                                    {{-- <th>
-                                        Username
-                                        <span wire:click="sortBy('username')" class="text-sm float-sm-right" style="cursor: pointer;font-size:10px;">
-                                            <i class="mr-1 fa fa-arrow-up" style="color:{{ $sortColumnName === 'username' && $sortDirection === 'asc' ? '#90EE90' : '' }}"></i>
-                                            <i class="fa fa-arrow-down" style="color : {{ $sortColumnName === 'username' && $sortDirection === 'desc' ? '#90EE90' : '' }}"></i>
-                                        </span>
-                                    </th> --}}
                                     <th class="align-middle" scope="col">Photo</th>
-                                    {{-- <th>
-                                        Email
-                                        <span wire:click="sortBy('email')" class="text-sm float-sm-right" style="cursor: pointer;font-size:10px;">
-                                            <i class="mr-1 fa fa-arrow-up" style="color:{{ $sortColumnName === 'email' && $sortDirection === 'asc' ? '#90EE90' : '' }}"></i>
-                                            <i class="fa fa-arrow-down" style="color : {{ $sortColumnName === 'email' && $sortDirection === 'desc' ? '#90EE90' : '' }}"></i>
-                                        </span>
-                                    </th> --}}
                                     <th>Phone</th>
                                     <th>Role</th>
                                     <th>
@@ -129,6 +130,12 @@
                             <tbody>
                                 @forelse ($users as $user)
                                     <tr>
+                                        <td scope="col">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" wire:model="selectedRows" value="{{ $user->id }}" class="custom-control-input" id="{{ $user->id }}">
+                                                <label class="custom-control-label" for="{{ $user->id }}"></label>
+                                            </div>
+                                        </td>
                                         <td>{{ $loop->iteration }}</td>
                                         <td class="dtr-control sorting_1" tabindex="0">{{ $user->name }}</td>
                                         {{-- <td>{{ $user->username }}</td> --}}
@@ -355,16 +362,15 @@
                         </div>
 
                         <!-- Modal User Status -->
-
-                        <div class="form-group d-flex">
-                            <label for="statusRadio">Status :</label>
-                            <div class="ml-2 mr-2 form-check">
-                                <input class="form-check-input" wire:model="data.status" value="1" type="radio">
-                                 <label class="form-check-label">Active</label>
+                        <div class="form-group clearfix">
+                            <label for="statusRadio" class="d-inline">Status :</label>
+                            <div class="icheck-primary d-inline ml-2 mr-2">
+                                <input type="radio" id="radioPrimary1" wire:model="data.status" value="1">
+                                <label for="radioPrimary1">Active</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" wire:model="data.status" value="0" type="radio">
-                                <label class="form-check-label">InActive</label>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary2" wire:model="data.status" value="0">
+                                <label for="radioPrimary2">InActive</label>
                             </div>
                         </div>
 
