@@ -85,9 +85,10 @@
                             </div>
                         </div>
 
+                        <label class="flex-wrap">Total Users : &nbsp{{ $users->total() }}</label>
+
                         {{-- Roles filter --}}
                         <div class="form-group d-flex align-items-center">
-                            <label class="flex-wrap">Roles filter &nbsp &nbsp<span class="bg-secondary badge badge-light button-badge">Total : {{ $users->total() }}</span></label>
                             <select class="form-control bg-secondary flex-wrap" wire:change='filterUsersByRoles($event.target.value)'>
                                 <option value="">All</option>
                                 @foreach ($roles as $role)

@@ -54,6 +54,7 @@
                                 </div>
                             </div>
                         </div>
+                        <span class="bg-secondary badge badge-light button-badge">Total : {{ $roles->total() }}</span>
                     </div>
 
                     <div class="table-responsive">
