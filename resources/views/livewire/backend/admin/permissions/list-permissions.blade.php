@@ -131,7 +131,7 @@
 
                                 <div class="form-group">
                                     <label for="name">Name</label>
-                                    <input type="text" tabindex="1" wire:model.defer="data.name" class="form-control @error('name') is-invalid @enderror" id="name" aria-describedby="nameHelp" placeholder="Enter permission name" readonly>
+                                    <input type="text" tabindex="1" wire:model.defer="data.name" class="form-control @error('name') is-invalid @enderror" id="name" aria-describedby="nameHelp" placeholder="Permission Key" readonly>
                                     @error('name')
                                     <div class="invalid-feedback">
                                         {{ $message }}
