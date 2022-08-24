@@ -63,6 +63,11 @@ class ListUsers extends Component
         }
     }
 
+    public function resetSelectedRows()
+    {
+        $this->reset(['selectedRows', 'selectPageRows']);
+    }
+
     // show Sweetalert Confirmation for Delete
 
     public function deleteSelectedRows()
@@ -198,6 +203,8 @@ class ListUsers extends Component
     {
         $this->reset();
         $this->showEditModal = false;
+        $this->data['role_id'] = 3;
+        $this->data['status'] = 1;
         $this->dispatchBrowserEvent('show-form');
     }
 
@@ -331,6 +338,8 @@ class ListUsers extends Component
             return $message;
         }
     }
+
+    // Show user details
 
     public function show(User $user)
     {

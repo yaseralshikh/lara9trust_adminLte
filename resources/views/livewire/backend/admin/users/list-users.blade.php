@@ -102,6 +102,7 @@
                             <i class="fa fa-user" aria-hidden="true"></i>
                             selected
                             <span class="text-dark font-weight-bold">{{ count($selectedRows) }}</span> {{ Str::plural('user', count($selectedRows)) }}
+                            <a class="ml-2 text-gray" href="" wire:click="resetSelectedRows" data-toggle="tooltip" data-placement="top" title="Reset Selected Rows"><i class="fas fa-times"></i></a>
                         </span>
                     @endif
 
