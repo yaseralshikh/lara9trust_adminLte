@@ -566,6 +566,8 @@
 
     @section('script')
 
+        <script src="{{ asset('backend/js/jquery.printPage.js') }}" type="text/javascript"></script>
+
         <script>
             $(document).ready( function() {
 
@@ -622,6 +624,7 @@
                 })
             })
         </script>
+
     @endsection
 
 </div>

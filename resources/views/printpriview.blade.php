@@ -25,13 +25,11 @@
                 width: 100%;
                 border-collapse: collapse;
             }
-            img{
-                margin-bottom: 15px;
-            }
 		</style>
 	</head>
 
 	<body>
+        <a href="{{ url('/prnpriview') }}" class="btnprn btn">Print Preview</a>
 		<h1>A simple, clean, and responsive HTML invoice template</h1>
 		<h3>Because sometimes, all you need is something simple.</h3>
         <img src="{{ asset('backend/img/logo.png') }}" width="80px" alt="">
@@ -76,7 +74,12 @@
                 هذا النص يمكن أن يتم تركيبه على أي تصميم دون مشكلة فلن يبدو وكأنه نص منسوخ، غير منظم، غير منسق، أو حتى غير مفهوم. لأنه مازال نصاً بديلاً ومؤقتاً.
             </p>
 		</div>
-        <script src="{{ asset('backend/plugins/jquery/jquery.min.js') }}"></script>
+
         <script src="{{ asset('backend/js/jquery.printPage.js') }}" type="text/javascript"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.btnprn').printPage();
+            });
+        </script>
 	</body>
 </html>
